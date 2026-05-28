@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.DoctorDTO;
 import com.example.demo.exception.RecursoNoEncontradoException;
+import com.example.demo.model.Cita;
 import com.example.demo.model.Doctor;
+import com.example.demo.repository.CitaRepository;
 import com.example.demo.repository.DoctorRepository;
 
 @Service
@@ -15,6 +17,9 @@ public class DoctorService {
 	
 	@Autowired
 	private DoctorRepository doctorRepository;
+	
+	@Autowired
+	private CitaRepository citaRepository;
 	
 	
 	public Doctor crearDoctor(DoctorDTO dto) {
@@ -66,6 +71,15 @@ public class DoctorService {
 		doctorRepository.deleteById(id);
 		return true;
 		
+	}
+	
+	
+	public List<Cita> listarCitasDeDoctor(Long id) {
+	    doctorRepository.findById(id)
+	        .orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Doctor no encontrado con ID: " + id));
+	    
+	    return citaRepository.findByDoctorId(id);
 	}
 	 
 }

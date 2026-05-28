@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.DoctorDTO;
+import com.example.demo.model.Cita;
 import com.example.demo.model.Doctor;
 import com.example.demo.service.DoctorService;
 
@@ -54,6 +55,11 @@ public class DoctorController {
 	@DeleteMapping("/{id}")
 	public boolean eliminarDoctor(@PathVariable Long id) {
 		return doctorService.eliminarDoctor(id);
+	}
+	
+	@GetMapping("/{id}/citas")
+	public List<Cita> listarCitasDeDoctor(@PathVariable Long id) {
+	    return doctorService.listarCitasDeDoctor(id);
 	}
 	
 }
