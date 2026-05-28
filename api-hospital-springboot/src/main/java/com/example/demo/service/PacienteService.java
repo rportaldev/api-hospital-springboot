@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.PacienteDTO;
+import com.example.demo.exception.RecursoNoEncontradoException;
 import com.example.demo.model.Paciente;
 import com.example.demo.repository.PacienteRepository;
 
@@ -34,15 +35,15 @@ public class PacienteService {
 	
 	public Paciente obtenerPacientePorId(Long id) {
 		
-		return pacienteRepository.findById(id).orElse(null);
+		return pacienteRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Paciente no encontrado con ID: " + id));
 		
 	}
 	
 	public Paciente actualizarPaciente(Long id, String nombre, String apellido, int edad, String correo, String telefono) {
 		
-		Paciente paciente = pacienteRepository.findById(id).orElse(null);
-		
-		if(paciente != null){
+		Paciente paciente = pacienteRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Paciente no encontrado con ID: " + id));
 			
 			paciente.setNombre(nombre);
 			paciente.setApellido(apellido);
@@ -50,20 +51,18 @@ public class PacienteService {
 			paciente.setCorreo(correo);
 			paciente.setTelefono(telefono);
 			return pacienteRepository.save(paciente);
-		}
 		
-		return null;
 		
 	}
 	
 	public boolean eliminarPaciente(Long id) {
 		
-		if(pacienteRepository.existsById(id)) {
-			pacienteRepository.deleteById(id);
-			return true;
-		}
+		pacienteRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Paciente no encontrado con ID: " + id));
 		
-		return false;
+		pacienteRepository.deleteById(id);
+		return true;
+		
 	}
 	
 }

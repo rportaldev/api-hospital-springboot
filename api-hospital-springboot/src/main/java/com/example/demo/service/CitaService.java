@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.CitaDTO;
+import com.example.demo.exception.RecursoNoEncontradoException;
 import com.example.demo.model.Cita;
 import com.example.demo.model.Doctor;
 import com.example.demo.model.Paciente;
@@ -29,8 +30,13 @@ public class CitaService {
 	
 	public Cita crearCita(CitaDTO dto) {
 		
-		Doctor doctor = doctorRepository.findById(dto.getDoctorId()).orElse(null);
-	    Paciente paciente = pacienteRepository.findById(dto.getPacienteId()).orElse(null);
+		Doctor doctor = doctorRepository.findById(dto.getDoctorId())
+			    .orElseThrow(() -> new RecursoNoEncontradoException(
+			        "Doctor no encontrado con ID: " + dto.getDoctorId()));
+		
+		Paciente paciente = pacienteRepository.findById(dto.getPacienteId())
+			    .orElseThrow(() -> new RecursoNoEncontradoException(
+			        "Paciente no encontrado con ID: " + dto.getPacienteId()));
 		
 		Cita cita = new Cita();
 		
@@ -54,7 +60,8 @@ public class CitaService {
 	
 	public Cita obtenerCitaPorId(Long id) {
 		
-		return citaRepository.findById(id).orElse(null);
+		return citaRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Cita no encontrada con ID: " + id));
 	}
 	
 	
@@ -62,12 +69,16 @@ public class CitaService {
 	public Cita actualizarCita(Long id, LocalDate fecha, LocalTime hora, String motivo, 
 								String estado, Long doctorId, Long pacienteId) {
 		
-		Doctor doctor = doctorRepository.findById(doctorId).orElse(null);
-	    Paciente paciente = pacienteRepository.findById(pacienteId).orElse(null);
-	    
-		Cita cita = citaRepository.findById(id).orElse(null);
+		Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Doctor no encontrado con ID: " + doctorId));
 		
-		if(cita != null) {
+	    Paciente paciente = pacienteRepository.findById(pacienteId).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Paciente no encontrado con ID: " + pacienteId));
+	    
+		Cita cita = citaRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Doctor no encontrado con ID: " + id));
+		
+		
 			cita.setFecha(fecha);
 			cita.setHora(hora);
 			cita.setMotivo(motivo);
@@ -76,22 +87,20 @@ public class CitaService {
 			cita.setPaciente(paciente);
 			
 			return citaRepository.save(cita);
-		}
-		
-		return null;
 	}
 	
 	
 	
 	public boolean eliminarCita(Long id) {
 		
-		if(citaRepository.existsById(id)) {
-			citaRepository.deleteById(id);
-			return true;
-		}
-		return false;
+		citaRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Cita no encontrada con ID: " + id));
+		
+		
+		citaRepository.deleteById(id);
+		return true;
+		
 	}
-	
 	
 	
 	public List<Cita> filtarPorEstado(String estado){

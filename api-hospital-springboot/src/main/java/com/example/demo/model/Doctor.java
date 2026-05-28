@@ -1,11 +1,13 @@
 package com.example.demo.model;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -31,6 +33,10 @@ public class Doctor {
 	@Column(name = "telefono",
 			nullable = false)
 	private String telefono;
+	
+	@OneToMany(mappedBy = "doctor")
+	private List<Cita> citas;
+
 	
 
 	public Doctor(Long id, String nombre, String especialidad, String correo, String telefono) {
@@ -96,6 +102,16 @@ public class Doctor {
 
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
+	}
+
+
+	public List<Cita> getCitas() {
+		return citas;
+	}
+
+
+	public void setCitas(List<Cita> citas) {
+		this.citas = citas;
 	}
 
 	

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.DoctorDTO;
+import com.example.demo.exception.RecursoNoEncontradoException;
 import com.example.demo.model.Doctor;
 import com.example.demo.repository.DoctorRepository;
 
@@ -36,34 +37,35 @@ public class DoctorService {
 	
 	public Doctor obtenerPorId(Long id) {
 		
-		return doctorRepository.findById(id).orElse(null);
+		return doctorRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Doctor no encontrado con ID: " + id));
 	}
 	
 	
 	public Doctor actualizarDoctor(Long id, String nombre, String especialidad, String correo, String telefono) {
 		
-		Doctor doctor = doctorRepository.findById(id).orElse(null);
+		Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Doctor no encontrado con ID: " + id));;
 		
-		if(doctor != null) {
+		
 			doctor.setNombre(nombre);
 			doctor.setEspecialidad(especialidad);
 			doctor.setCorreo(correo);
 			doctor.setTelefono(telefono);
 			
 			return doctorRepository.save(doctor);
-		}
 		
-		return null;
 	}
 	
 	
 	public boolean eliminarDoctor(Long id) {
 		
-		if(doctorRepository.existsById(id)) {
-			doctorRepository.deleteById(id);
-			return true;
-		}
-		return false;
+		doctorRepository.findById(id).orElseThrow(() -> new RecursoNoEncontradoException(
+	            "Doctor no encontrado con ID: " + id)); 
+		
+		doctorRepository.deleteById(id);
+		return true;
+		
 	}
 	 
 }
